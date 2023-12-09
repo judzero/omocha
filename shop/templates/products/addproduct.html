@@ -1,0 +1,80 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="container">
+    <div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <h2 class="text-center p-2 mt-3" style="background-color: #99ff99;">Add Product</h2>
+        {% from '_formhelpers.html' import render_field %}
+        <form action="" method="POST" enctype="multipart/form-data">
+            {{form.csrf_token}}
+            {{render_field(form.product_code, class="form-control", placeholder = "Add Product Code")}}
+            {{render_field(form.name, class="form-control", placeholder = "Add Product name")}}
+            {{render_field(form.price, class="form-control", placeholder = "Add Product Price")}}
+            {{render_field(form.discount, class="form-control", placeholder = "Add Product Discount")}}
+            <label for="brand">Add Category</label>
+            <select name="category" id="category" class="form-control" required>
+                <option value="">----------------------------------------------Select a Category------------------------------------------</option>
+                {% for category in categories %}
+                <option value="{{category.id}}">{{category.name}}</option>
+                {% endfor %}
+            </select>
+            <label for="brand">Add Brand</label>
+            <select name="brand" id="brand" class="form-control" required>
+                <option value="">-----------------------------------------------Select a Brand--------------------------------------------</option>
+                {% for brand in brands %}
+                <option value="{{brand.id}}">{{brand.name}}</option>
+                {% endfor %}
+            </select>
+            <br>
+            
+            <div class="row">
+                <div class="col-md-4">{{render_field(form.image_1)}}</div><ul>
+                    <!-- <ul>
+                        {% if image_list|length == 0 %}
+                        {% else %}
+                            {% for image in image_list %}
+                            <li>
+                                <img src="data:;base64,{{image}}"/>
+                            </li>
+                            {% endfor %}
+                        {% endif %}
+                        </ul> -->
+            </div>
+            <br>
+            {{render_field(form.stock, class="form-control", placeholder = "Add Product Stock")}}
+            {{render_field(form.description, class="form-control", placeholder = "Add Product Description", rows = "3")}}
+            <div class="container">
+            </div>
+            <input type="submit" class="btn btn-outline-info mb-2" value="Submit">
+            <a href="{{url_for('seller')}}" class="btn btn-danger" style="margin-bottom: 8px; margin-left: 5px;">Cancel</a>
+            <!-- Button trigger modal -->
+            <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop">
+                Cancel
+            </button> -->
+            <!-- Modal -->
+            <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+                    <div class="modal-body">
+                    ...
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Understood</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-2"></div>  
+    </div>
+</div>
+{% endblock content %}

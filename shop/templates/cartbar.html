@@ -1,0 +1,190 @@
+{% extends 'layout.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <title>OMOCHA SHOP</title>
+        <!-- Favicon-->
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Bootstrap icons-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="{{url_for('static', filename='css/landing.css')}}" rel="stylesheet" />
+
+    </head>
+    <body>
+     <!-- Navigation-->
+     <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container px-4 px-lg-5">
+            <a class="navbar-brand" href="/">OMOCHA</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="/">Products</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+                        <!--Brands Dropdown Items-->                    
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categories</a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                {% for category in categories %}
+                                    <li>
+                                        <a class="dropdown-item" href="{{url_for('get_category', id = category.id)}}">{{category.name}}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                        <!--Category Dropdown Items--> 
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Brands</a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            {% for brand in brands %}
+                                    <li>
+                                        <a class="dropdown-item" href="{{url_for('get_brand', id = brand.id)}}">{{brand.name}}</a>
+                                    </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="/login" style="margin-left: 570px;">Log In</a></li>
+                    <!--Nav end-->
+                </ul>
+
+                <!--Carty B-->
+                <form class="d-flex">
+                        <a class="btn btn-outline-dark" href="{{url_for('getCart')}}">
+                            <i class="bi-cart-fill me-1"></i>
+                            Cart
+                            <span class="badge bg-dark text-white ms-1 rounded-pill">({{session['ShoppingCart']|length}})</span>
+                        </a>
+                </form>
+            </div>
+        </div>
+    </nav> 
+        <!--Brands Dropdown Show-->
+        <div class="container">
+            <div class="row">  
+                {% if brand %}
+                {% for b in brand.items %}
+                <div class="col-md-3 mt-4">
+                    <div class="card">
+                        <img src="{{url_for('static', filename='images/' + b.image_1)}}" alt="{b.name}" class="card-img-top" style="height: 200px; width: 300px; padding: 12px 12px;">
+                        <div class="card-body">
+                            {% if b.id > 0 %}
+                            <div class="badge bg-dark text-white position-absolute" style="top: 0.1rem; left: 0.2rem">Brand New
+                            </div>
+                            {% endif %}
+                            {% if b.discount > 0 %}
+                            <h5 style="background-color: #ff6699; border-radius: 6px;
+                            font-size: 18px; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; position: absolute; top: 55%; left: 33%;" 
+                            class="text-center">Discount : {{b.discount}}%</h5>
+                            {% endif %}
+                            <h5 class="text-center mt-4 mb-2">{{b.name}}</h5>
+                            <p class="text-center">Price : ₱ {{b.price}}</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{{url_for('product_info', id=b.id)}}" class="float-left btn btn-sm btn-secondary">Details</a>
+                            <form action="{{url_for('AddCart')}}" method="POST">
+                                <input type="hidden" name="product_id" value="{{b.id}}">
+                                <button type="submit" class="btn btn-outline-dark flex-shrink-0 float-right">Add to Cart</button>
+                                <input type="hidden" name="quantity" id="" value="1" min="1" max="{{b.stock}}">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+            <!--Brands Pagination-->
+            <div class="row">
+                <div class="col text-center mt-5">
+                    {% if brand.has_prev %}
+                    <a href="{{url_for('get_brand', id=get_br.id, page=brand.prev_num)}}" class="btn btn-outline-success rounded-circle"><img src="{{url_for('static', filename='logo/arrow_left.png')}}" style="height: 27px; width: 17px;"></a>
+                    {% endif %}
+                    {% if brand.total > 4 %}                                        
+                    {% for page_num in brand.iter_pages(left_edge=1, right_edge=2, left_current=1, right_current=2) %}
+                    {% if page_num %}
+                    {% if brand.page == page_num %}
+                    <a href="{{url_for('get_brand', id=get_br.id, page=page_num)}}" class="btn btn-success rounded-circle" style="display: inline;">{{page_num}}</a>
+                    {% else %}
+                    <a href="{{url_for('get_brand', id=get_br.id, page=page_num)}}" class="btn btn-outline-success rounded-circle" style="display: inline;">{{page_num}}</a>
+                    {% endif %}
+                    {% else %}
+                    <span style="font-size: 18px;">&#127919;&#9917;&#9918;</span>
+                    {% endif %}
+                    {% endfor %}
+                    {% endif %}
+                    {% if brand.has_next %}
+                    <a href="{{url_for('get_brand', id=get_br.id, page=brand.next_num)}}" class="btn btn-outline-success rounded-circle"><img src="{{url_for('static', filename='logo/arrow_right.png')}}" style="height: 27px; width: 17px;"></a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!--Category Dropdown Show-->         
+            <div class="row">
+            {% elif get_cat_prod %}
+            {% for get_cat in get_cat_prod.items %}   
+            <div class="col-md-3 mt-4">
+                <div class="card">
+                    <img src="{{url_for('static', filename='images/' + get_cat.image_1)}}" alt="{get_cat.name}" class="card-img-top" style="height: 200px; width: 300px; padding: 12px 12px;">
+                    <div class="card-body">
+                        {% if get_cat.id > 0 %}
+                        <div class="badge bg-dark text-white position-absolute" style="top: 0.1rem; left: 0.2rem">Brand New
+                        </div>
+                        {% endif %}
+                        {% if get_cat.discount > 0 %}
+                        <h5 style="background-color: #bf80ff; border-radius: 6px;
+                        font-size: 18px; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; position: absolute; top: 55%; left: 33%;" 
+                        class="text-center">Discount : {{get_cat.discount}}%</h5>
+                        {% endif %}
+                        <h5 class="text-center mt-4 mb-2">{{get_cat.name}}</h5>
+                        <p class="text-center">Price : ₱ {{get_cat.price}}</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{{url_for('product_info', id=get_cat.id)}}" class="float-left btn btn-sm btn-secondary">Details</a>
+                        <form action="{{url_for('AddCart')}}" method="POST">
+                            <input type="hidden" name="product_id" value="{{get_cat.id}}">
+                            <button type="submit" class="btn btn-outline-dark flex-shrink-0 float-right">Add to Cart</button>
+                            <input type="hidden" name="quantity" id="" value="1" min="1" max="{{get_cat.stock}}">
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            </div>
+            
+            <!--Categories Pagination-->
+            <div class="row">
+                <div class="col text-center mt-5">
+                    {% if get_cat_prod.has_prev %}
+                    <a href="{{url_for('get_category', id=get_cat.id, page=get_cat_prod.prev_num)}}" class="btn btn-outline-success rounded-circle"><img src="{{url_for('static', filename='logo/arrow_left.png')}}" style="height: 27px; width: 17px;"></a>
+                    {% endif %}
+                    {% if get_cat_prod.total > 4 %}                                        
+                    {% for page_num in get_cat_prod.iter_pages(left_edge=1, right_edge=2, left_current=1, right_current=2) %}
+                    {% if page_num %}
+                    {% if get_cat_prod.page == page_num %}
+                    <a href="{{url_for('get_category', id=get_cat.id, page=page_num)}}" class="btn btn-success rounded-circle" style="display: inline;">{{page_num}}</a>
+                    {% else %}
+                    <a href="{{url_for('get_category', id=get_cat.id, page=page_num)}}" class="btn btn-outline-success rounded-circle" style="display: inline;">{{page_num}}</a>
+                    {% endif %}
+                    {% else %}
+                    <span style="font-size: 18px;">&#127952;&#9917;&#9918;</span>
+                    {% endif %}
+                    {% endfor %}
+                    {% endif %}
+                    {% if get_cat_prod.has_next %}
+                    <a href="{{url_for('get_category', id=get_cat.id, page=get_cat_prod.next_num)}}" class="btn btn-outline-success rounded-circle"><img src="{{url_for('static', filename='logo/arrow_right.png')}}" style="height: 27px; width: 17px;"></a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
+{% endblock content %}

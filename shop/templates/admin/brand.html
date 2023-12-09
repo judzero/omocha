@@ -1,0 +1,58 @@
+{% extends 'layout.html' %}
+{% include '_messages.html' %}
+{% block content %}
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/seller">Seller Page</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="/seller">Home<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/about">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/brands">Brands</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/category">Category</a>
+              </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{url_for('logout')}}" style="margin-left: 650px;">Logout</a>
+            </li>
+        </div>
+      </nav>
+</div>
+<div class="container mt-5">
+    <table class="table table-sm table-bordered table-condensed table-hover">
+        <thead>
+            <th>#</th>
+            <th>Name</th>
+            <th>Edit</th>
+        </thead>
+        <tbody>
+            {% if brands %}
+            {% for brand in brands %}
+            <tr>
+                <td>{{loop.index}}</td>
+                <td>{{brand.name}}</td>
+                <td><a href="{{url_for('updatebrand', id=brand.id)}}" class="btn btn-sm btn-outline-info">Edit</a></td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            {% for category in categories %}
+            <tr>
+                <td>{{loop.index}}</td>
+                <td>{{category.name}}</td>
+                <td><a href="{{url_for('updatecategory', id=category.id)}}" class="btn btn-sm btn-outline-info">Edit</a></td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}
