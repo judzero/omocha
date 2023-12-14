@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <link href="{{url_for('static', filename='css/styles.css')}}" rel="stylesheet">
+    <style>
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="{{url_for('static', filename='logo/omochawhite.png')}}" class="img-fluid" style="flex-direction: column; display: flex; margin-top: -190px;">
+        <!-- <p class="login-text">Log In</p> -->
+    </div>
+    {% extends "layout.html" %}
+    {% block content %}
+    <div class="form-box-login">
+        <div class="header-text">
+            Log In
+        </div>
+        <div class="flash-container">
+            <!-- Flash messages will appear here -->
+            {% include '_messages.html' %}
+        </div>
+        <div class="container">
+            {% from "_formhelpers.html" import render_field %}
+            <form action="{{url_for('customerLogin')}}" method="POST" enctype="multipart/form-data">
+                {{ form.csrf_token }}
+                <div>
+                    <br>
+                    {{ render_field(form.email)}}
+                    <br>
+                    {{ render_field(form.password)}}
+                    <br>
+                     <a href="#!" style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 15px;">Forgot Password?</a>
+                    <br>
+                    <br>
+                    <input type="submit" class="btn-nice" value="Log In" style="padding: 0px 12px; margin-bottom: 20px;">
+                </div>
+            <style>
+                hr{
+                    border: 1.5px solid #0B5345;
+                       margin: 15px 5px;
+                    margin-bottom: 2px;
+                }
+            </style>
+            <hr>
+            <br>
+            <center>
+            <p style=" color:#283747; font-size: 19px; margin-top: 2px;">New to OMOCHA? &nbsp; <a href="{{ url_for('register') }}" style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">Sign Up</a></p>
+            </center>
+        </form>
+    </div>
+    <div id="video-container">
+        <!-- <img src="{{url_for('static', filename='bgvid/green.gif')}}" height="100%" width="100%" loop> -->
+        <video id="background-video" src="{{url_for('static', filename='bgvid/green.mp4')}}" loop autoplay muted></video>
+    </div>
+</body>
+</html>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Function to check for flashed messages and update form-box size
+        function updateFormBoxSize() {
+            if ($(".flash-container").children().length > 0) {
+                // Flash message is present, adjust form-box size
+                $(".form-box-login").css("height", "600px"); // Or any other height you want
+                $(".form-box-login").css("width", "500px");
+            } else {
+                // No flash message, restore form-box size
+                $(".form-box-login").css("height", "555px");
+                $(".form-box-login").css("width", "500px");
+            }
+        }
+
+        // Initial check and update
+        updateFormBoxSize();
+
+        // Monitor changes to the flash message container
+        $(".flash-container").on("DOMSubtreeModified", updateFormBoxSize);
+    });
+</script>
+{% endblock content %}

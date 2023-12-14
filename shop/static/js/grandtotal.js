@@ -23,7 +23,7 @@ $(document).ready(function () {
         var total = 0;
         var shipping = 0;
         var grandtotal = 0;
-
+        
         // Check if at least one checkbox is checked
         if ($('.item-checkbox:checked').length > 0) {
             // Set shipping to $50 when at least one checkbox is checked

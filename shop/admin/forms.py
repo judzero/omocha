@@ -1,4 +1,4 @@
-from wtforms import Form, BooleanField, StringField, IntegerField ,PasswordField, validators, SubmitField
+from wtforms import Form, BooleanField, StringField, IntegerField ,PasswordField, validators
 from wtforms.validators import regexp, InputRequired
 from flask_wtf import FlaskForm
 
@@ -15,11 +15,7 @@ class RegistrationForm(FlaskForm):
 class LoginForm(FlaskForm):
     email = StringField('Email :', [validators.Length(min=12, max=35), validators.Email()])
     password = PasswordField('Password :', [validators.DataRequired()])
-    
-    
-    
-# class LettersOnly(FlaskForm):
-#     name = StringField('PLEASE ENTER LETTERS ONLY!!', validators=[InputRequired(), regexp('^[A-Za-z]+$', message="Only letters are allowed")])
+
     
 
 

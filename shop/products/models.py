@@ -2,9 +2,8 @@ from shop import db,app
 from datetime import datetime
 
 
-
 class Addproduct(db.Model):
-    __seachbale__ = ['name','desc']
+    __seachabale__ = ['name','desc']
     id = db.Column(db.Integer, primary_key=True)
     product_code = db.Column(db.String(80), nullable=False)
     name = db.Column(db.String(80), nullable=False)
@@ -25,23 +24,21 @@ class Addproduct(db.Model):
 
     def __repr__(self):
         return '<Post %r>' % self.name
+    
+    def __repr__(self):
+        return '<Post:{}>'.format(self.title)
 
 class Brand(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), unique=True, nullable=False)
-    
-    
-
     def __repr__(self):
         return '<Brand %r>' % self.name
     
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), unique=True, nullable=False)
-    
-
     def __repr__(self):
         return '<Catgory %r>' % self.name
-
+    
 with app.app_context():
     db.create_all()

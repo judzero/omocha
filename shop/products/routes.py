@@ -1,5 +1,6 @@
 from flask import render_template,session, request,redirect,url_for,flash,current_app
-from shop import db,photos,app,IMAGES
+from sqlalchemy import or_
+from shop import db,photos,app,IMAGES,search
 from .models import Category,Brand,Addproduct
 from .forms import Addproducts
 import secrets
@@ -37,9 +38,29 @@ def logout():
 
 @app.route('/result')
 def result():
-    searchword = request.args.get('q')
-    products = Addproduct.query.msearch(searchword, fields=['name','desc'] , limit=6)
-    return render_template('products/result.html',products=products,brands=brands(),categories=categories())
+    searchword = request.form.get('q')
+    products = Addproduct.query.msearch(searchword, fields=['name']).all()
+    return render_template('products/result.html',products=products)
+
+
+# @app.route('/search', methods=['GET', 'POST'])
+# def search():
+#     if request.method == 'POST':
+#         search_query = request.form.get('search_query')
+#         if search_query:
+#             # Perform a simple text search on the 'name' and 'desc' fields
+#             results = (
+#                 Addproduct.query
+#                 .filter(
+#                     or_(
+#                         Addproduct.name.ilike(f"%{search_query}%"),
+#                         Addproduct.desc.ilike(f"%{search_query}%")
+#                     )
+#                 )
+#                 .all()
+#             )
+#             return render_template('products/index.html', results=results, search_query=search_query)
+#     return render_template('products/result.html')
 
 @app.route('/brand/<int:id>')
 def get_brand(id):
@@ -92,14 +113,14 @@ def updatebrand(id):
 
 # @app.route('/deletebrand/<int:id>', methods=['POST'])
 # def deletebrand(id):
-    brand = Brand.query.get_or_404(id)
-    if request.method=="POST":
-        db.session.delete(brand)
-        flash(f"The brand {brand.name} was deleted from your database","success")
-        db.session.commit()
-        return redirect(url_for('seller'))
-    flash(f"The brand {brand.name} can't be  deleted from your database","warning")
-    return redirect(url_for('seller'))
+#     brand = Brand.query.get_or_404(id)
+#     if request.method=="POST":
+#         db.session.delete(brand)
+#         flash(f"The brand {brand.name} was deleted from your database","success")
+#         db.session.commit()
+#         return redirect(url_for('seller'))
+#     flash(f"The brand {brand.name} can't be  deleted from your database","warning")
+#     return redirect(url_for('seller'))
 
 @app.route('/addcategory',methods=['GET','POST'])
 def addcategory():
@@ -130,16 +151,16 @@ def updatecategory(id):
     category = updatecategory.name
     return render_template('products/updatebrand.html', title='Update cat', updatecategory=updatecategory)
 
-# @app.route('/deletecategory/<int:id>', methods=['GET','POST'])
-# def deletecategory(id):
-    category = Category.query.get_or_404(id)
-    if request.method=="POST":
-        db.session.delete(category)
-        flash(f"The brand {category.name} was deleted from your database","success")
-        db.session.commit()
-        return redirect(url_for('seller'))
-    flash(f"The brand {category.name} can't be  deleted from your database","warning")
-    return redirect(url_for('seller'))
+# # @app.route('/deletecategory/<int:id>', methods=['GET','POST'])
+# # def deletecategory(id):
+#     category = Category.query.get_or_404(id)
+#     if request.method=="POST":
+#         db.session.delete(category)
+#         flash(f"The brand {category.name} was deleted from your database","success")
+#         db.session.commit()
+#         return redirect(url_for('seller'))
+#     flash(f"The brand {category.name} can't be  deleted from your database","warning")
+#     return redirect(url_for('seller'))
 
 @app.route('/addproduct', methods=['GET','POST'])
 def addproduct():
@@ -207,17 +228,17 @@ def updateproduct(id):
     category = product.category.name
     return render_template('products/updateproduct.html', form=form, title='Update Product',product=product, brands=brands,categories=categories)
 
-# @app.route('/deleteproduct/<int:id>', methods=['POST'])
-# def deleteproduct(id):
-    product = Addproduct.query.get_or_404(id)
-    if request.method =="POST":
-        try:
-            os.unlink(os.path.join(current_app.root_path, "static/images/" + product.image_1))
-        except Exception as e:
-            print(e)
-        db.session.delete(product)
-        db.session.commit()
-        flash(f'The product {product.name} was delete from your record','success')
-        return redirect(url_for('seller'))
-    flash(f'Can not delete the product','success')
-    return redirect(url_for('seller'))
+# # @app.route('/deleteproduct/<int:id>', methods=['POST'])
+# # def deleteproduct(id):
+#     product = Addproduct.query.get_or_404(id)
+#     if request.method =="POST":
+#         try:
+#             os.unlink(os.path.join(current_app.root_path, "static/images/" + product.image_1))
+#         except Exception as e:
+#             print(e)
+#         db.session.delete(product)
+#         db.session.commit()
+#         flash(f'The product {product.name} was delete from your record','success')
+#         return redirect(url_for('seller'))
+#     flash(f'Can not delete the product','success')
+#     return redirect(url_for('seller'))
