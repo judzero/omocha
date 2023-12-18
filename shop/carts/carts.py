@@ -71,4 +71,3 @@ def clearcart():
         return redirect(url_for('home'))
     except Exception as e:
         print(e)
-    

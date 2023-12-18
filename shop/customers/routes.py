@@ -7,6 +7,9 @@ import secrets
 import os
 from flask_mail import Message
 
+app.config['STRIPE_PUBLIC_KEY'] = 'pk_test_51OOkWEK4Yt7azovvDWXIAPJOzZOwq533hXqqZUQGwzQdHZioL4jQrQXTzI8cdeUNyaG1YVVRQuyZ52QFmEhLJksu00EN8c75Kq'
+app.config['STRIPE_SECRET_KEY'] =  'sk_test_51OOkWEK4Yt7azovvCahoEAIVsyZ8o2eSoBzPc3mWgyy2TRpbV36lHzGFue42JxY9yOXzEoKXFD2pae9eES1N1VMt00S4myQB3y'
+import stripe
 
 @app.route('/customer/register', methods=['GET','POST'])
 def customer_register():
@@ -52,6 +55,8 @@ def get_order():
             print(e)
             flash('Error getting your order', 'danger')
             return redirect(url_for('getCart'))
+    else:
+         return redirect(url_for('customerLogin'))
         
         
 def send_reset_email(user):
@@ -105,3 +110,43 @@ def reset_token(token):
         flash('Your password has been updated! You are now able to log in', 'success')
         return redirect(url_for('customerLogin'))
     return render_template('customer/reset_token.html',title='Reset Password', form=form)
+
+        
+@app.route('/orders/<invoice>')
+@login_required
+def orders(invoice):
+    if current_user.is_authenticated:
+        grandTotal = 0
+        subTotal = 0
+        customer_id = current_user.id
+        customer = Register.query.filter_by(id=customer_id).first()
+        orders = CustomerOrder.query.filter_by(customer_id=customer_id, invoice=invoice).order_by(CustomerOrder.id.desc()).first()
+        for _key, product in orders.orders.items():
+            discount = (product['discount']/100) * float(product['price'])
+            subTotal += float(product['price']) * int(product['quantity'])
+            subTotal -= discount
+            tax = ("%.2f" % (.06 * float(subTotal)))
+            grandTotal = ("%.2f" % (1.06 * float(subTotal)))
+
+    else:
+        return redirect(url_for('customerLogin'))
+    return render_template('customer/order.html', invoice=invoice, tax=tax,subTotal=subTotal,grandTotal=grandTotal,customer=customer,orders=orders)
+
+@app.route('/payment',methods=['POST'])
+def payment():
+    invoice = request.get('invoice')
+    amount = request.form.get('amount')
+    customer = stripe.Customer.create(
+      email=request.form['stripeEmail'],
+      source=request.form['stripeToken'],
+    )
+    charge = stripe.Charge.create(
+      customer=customer.id,
+      description='Myshop',
+      amount=amount,
+      currency='usd',
+    )
+    orders =  CustomerOrder.query.filter_by(customer_id = current_user.id,invoice=invoice).order_by(CustomerOrder.id.desc()).first()
+    orders.status = 'Paid'
+    db.session.commit()
+    return redirect(url_for('thank_you'))

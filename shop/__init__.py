@@ -10,6 +10,7 @@ from flask_msearch import Search
 from flask_login import LoginManager
 from flask_mail import Mail
 
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask (__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///omochashop.db'
@@ -19,6 +20,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 search = Search()
+
+
 # search.init_app(app)
 
 login_manager = LoginManager()
