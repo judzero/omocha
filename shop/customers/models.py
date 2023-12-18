@@ -20,20 +20,24 @@ class Register(db.Model, UserMixin):
     zipcode = db.Column(db.String(50), unique= False)
     profile = db.Column(db.String(200), unique= False , default='profile.jpg')
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    
+    reset_token_used = db.Column(db.Integer, default=0, nullable=False)
 
 
     
     def get_reset_token(self, expires_sec=1800):
-        reset_token = jwt.encode(
-            {
-                "confirm": self.id,
-                "exp": datetime.now() + timedelta(seconds=expires_sec)
-            },
-            app.config['SECRET_KEY'],
-            algorithm="HS256"
-        )
-        return reset_token
+        if not self.reset_token_used:
+            reset_token = jwt.encode(
+                {
+                    "confirm": self.id,
+                    "exp": datetime.now() + timedelta(seconds=expires_sec)
+                },
+                app.config['SECRET_KEY'],
+                algorithm="HS256"
+            )
+            return reset_token
+        else:
+            return None
+    
     
     @staticmethod
     def verify_reset_token(token):
