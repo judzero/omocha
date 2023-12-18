@@ -8,6 +8,7 @@ import os
 
 from flask_msearch import Search
 from flask_login import LoginManager
+from flask_mail import Mail
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask (__name__)
@@ -37,6 +38,14 @@ with app.app_context():
         migrate.init_app(app, db, render_as_batch=True)
     else:
         migrate.init_app(app, db)
+        
+app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = os.environ.get('DB_USER')
+app.config['MAIL_PASSWORD'] = os.environ.get('DB_PASSWORD')
+mail = Mail(app)
 
 
 

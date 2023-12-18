@@ -35,9 +35,15 @@
                                 <button class="btn my-sm-0" type="submit">&#128269;</button>
                             </form>
                         </li>
+                        {% if current_user.is_authenticated %}
                         <li 
-                            class="nav-item"><a class="nav-link" href="/login" style="margin-left: 220px;">Log In</a>
+                            class="nav-item"><a class="nav-link" href="{{url_for('customer_logout')}}" style="margin-left: 220px;">Logout</a>
                         </li>
+                        {% else %}
+                        <li 
+                        class="nav-item"><a class="nav-link" href="{{url_for('customerLogin')}}" style="margin-left: 220px;">Log In</a>
+                        </li>
+                        {% endif %}
                         <li>
                         <!--Carty B-->
                         <form class="d-flex ml-4">

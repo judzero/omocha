@@ -1,7 +1,7 @@
 from shop import db, app, login_manager
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask_login import UserMixin
-import json
+import json , jwt
 
 @login_manager.user_loader
 def user_loader(user_id):
@@ -20,9 +20,44 @@ class Register(db.Model, UserMixin):
     zipcode = db.Column(db.String(50), unique= False)
     profile = db.Column(db.String(200), unique= False , default='profile.jpg')
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    
 
+
+    
+    def get_reset_token(self, expires_sec=1800):
+        reset_token = jwt.encode(
+            {
+                "confirm": self.id,
+                "exp": datetime.now() + timedelta(seconds=expires_sec)
+            },
+            app.config['SECRET_KEY'],
+            algorithm="HS256"
+        )
+        return reset_token
+    
+    @staticmethod
+    def verify_reset_token(token):
+        try:
+            data = jwt.decode(
+                token,
+                app.config['SECRET_KEY'],
+                leeway=timedelta(seconds=10),
+                algorithms=["HS256"]
+            )
+            user_id = data.get('confirm')
+            user = Register.query.get(user_id)
+            if user is None:
+                return None  # Token is valid, but user not found
+            # Update the confirmation status or perform additional checks if needed
+            return user
+        except jwt.ExpiredSignatureError:
+            # Token has expired
+            return None
+        except jwt.InvalidTokenError:
+            # Token is invalid
+            return None
     def __repr__(self):
-        return '<Register %r>' % self.name
+        return '<Register %r>' % self.name, self.password, self.email
 
 
 class JsonEcodedDict(db.TypeDecorator):

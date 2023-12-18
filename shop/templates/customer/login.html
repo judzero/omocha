@@ -32,7 +32,7 @@
                     <br>
                     {{ render_field(form.password)}}
                     <br>
-                     <a href="#!" style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 15px;">Forgot Password?</a>
+                     <a href="{{url_for('reset_request')}}" style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 15px;">Forgot Password?</a>
                     <br>
                     <br>
                     <input type="submit" class="btn-nice" value="Log In" style="padding: 0px 12px; margin-bottom: 20px;">
@@ -47,7 +47,7 @@
             <hr>
             <br>
             <center>
-            <p style=" color:#283747; font-size: 19px; margin-top: 2px;">New to OMOCHA? &nbsp; <a href="{{ url_for('register') }}" style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">Sign Up</a></p>
+            <p style=" color:#283747; font-size: 19px; margin-top: 2px;">New to OMOCHA? &nbsp; <a href="{{ url_for('customer_register') }}" style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">Sign Up</a></p>
             </center>
         </form>
     </div>
