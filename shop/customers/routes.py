@@ -1,4 +1,4 @@
-from flask import render_template, session, request, redirect,url_for,flash,current_app
+from flask import render_template, session, request, redirect,url_for,flash,current_app,jsonify
 from shop import app,db,photos,bcrypt,login_manager, mail
 from flask_login import login_required, current_user, login_user, logout_user
 from .forms import CustomerRegisterForm , CustomerLoginForm, RequestResetForm, ResetPasswordForm
@@ -6,10 +6,13 @@ from .models import Register, CustomerOrder
 import secrets
 import os
 from flask_mail import Message
+import traceback
+
+
+import stripe
 
 app.config['STRIPE_PUBLIC_KEY'] = 'pk_test_51OOkWEK4Yt7azovvDWXIAPJOzZOwq533hXqqZUQGwzQdHZioL4jQrQXTzI8cdeUNyaG1YVVRQuyZ52QFmEhLJksu00EN8c75Kq'
-app.config['STRIPE_SECRET_KEY'] =  'sk_test_51OOkWEK4Yt7azovvCahoEAIVsyZ8o2eSoBzPc3mWgyy2TRpbV36lHzGFue42JxY9yOXzEoKXFD2pae9eES1N1VMt00S4myQB3y'
-import stripe
+stripe.api_key='sk_test_51OOkWEK4Yt7azovvCahoEAIVsyZ8o2eSoBzPc3mWgyy2TRpbV36lHzGFue42JxY9yOXzEoKXFD2pae9eES1N1VMt00S4myQB3y'
 
 @app.route('/customer/register', methods=['GET','POST'])
 def customer_register():
@@ -41,22 +44,55 @@ def customer_logout():
     logout_user()
     return redirect(url_for('customerLogin'))
 
-@app.route('/order')
+@app.route('/customer/order', methods=['GET'])
 def get_order():
     if current_user.is_authenticated:
         customer_id = current_user.id
         invoice = secrets.token_hex(5)
+
         try:
-            order = CustomerOrder(invoice=invoice,customer_id=customer_id,orders=session['ShoppingCart'])
+            
+            
+            # Assuming session['ShoppingCart'] contains the details of the order
+            order = CustomerOrder(invoice=invoice, customer_id=customer_id, orders=session['ShoppingCart'])
             db.session.add(order)
+            db.session.commit()
+
+            
+            product_name = request.args.get('productName')
+            price = request.args.get('price')
+            quantity = request.args.get('quantity')
+
+            print("Product Name:", product_name)
+
+            # Create a product in Stripe
+            product_type = "good"  # Replace with your actual product type ('service' or 'good')
+            stripe_product = stripe.Product.create(name=product_name, type=product_type)
+
+            # Create a price for the product
+            price_amount = price
+            price_currency = "usd"  # Replace with the actual currency
+            stripe_price = stripe.Price.create(
+                product=stripe_product.id,
+                unit_amount=price_amount,
+                currency=price_currency,
+            )
+
+            # Retrieve the Stripe product ID and associate it with the order
+            order.stripe_product_id = stripe_product.id
+            order.stripe_price_id = stripe_price.id
+            db.session.commit()
+
             flash('Your order has been sent!', 'success')
-            return redirect(url_for('home'))
+            return jsonify(message='Order processed successfully')
+
+        except stripe.error.StripeError as e:
+            return jsonify(error=str(e)), 500
         except Exception as e:
-            print(e)
-            flash('Error getting your order', 'danger')
-            return redirect(url_for('getCart'))
+            traceback.print_exc()
+        return jsonify(error='Error getting your order')
     else:
-         return redirect(url_for('customerLogin'))
+        return redirect(url_for('customerLogin'))
         
         
 def send_reset_email(user):
