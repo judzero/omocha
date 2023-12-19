@@ -44,47 +44,57 @@ def customer_logout():
     logout_user()
     return redirect(url_for('customerLogin'))
 
-@app.route('/customer/order', methods=['GET'])
+@app.route('/customer/order', methods=['POST'])
 def get_order():
     if current_user.is_authenticated:
         customer_id = current_user.id
         invoice = secrets.token_hex(5)
 
         try:
+            data = request.get_json(force=True)
+            print("Received Data:", data)
+            product_name = data.get('productName', 'Default Product Name')
+            price = data.get('price', 0)
+            quantity = data.get('quantity', 0)
             
-            
+            print(product_name)
+            print(price)
+            print(quantity)
+            for product_name in data.items():
+                product_name = data.get('productName', 'Default Product Name')
+                price = data.get('price', 0)
+                quantity = data.get('quantity', 0)
+
+
             # Assuming session['ShoppingCart'] contains the details of the order
-            order = CustomerOrder(invoice=invoice, customer_id=customer_id, orders=session['ShoppingCart'])
-            db.session.add(order)
-            db.session.commit()
+                order = CustomerOrder(invoice=invoice, customer_id=customer_id, orders=session['ShoppingCart'])
+                db.session.add(order)
+                db.session.commit()
 
-            
-            product_name = request.args.get('productName')
-            price = request.args.get('price')
-            quantity = request.args.get('quantity')
+                print("Product Name:", product_name)
+                print("p:", price)
+                print("q:", quantity)
 
-            print("Product Name:", product_name)
+                # Create a product in Stripe
+                product_type = "good"  # Replace with your actual product type ('service' or 'good')
+                stripe_product = stripe.Product.create(name=product_name, type=product_type)
 
-            # Create a product in Stripe
-            product_type = "good"  # Replace with your actual product type ('service' or 'good')
-            stripe_product = stripe.Product.create(name=product_name, type=product_type)
-
-            # Create a price for the product
-            price_amount = price
-            price_currency = "usd"  # Replace with the actual currency
-            stripe_price = stripe.Price.create(
-                product=stripe_product.id,
-                unit_amount=price_amount,
-                currency=price_currency,
-            )
+                # Create a price for the product
+                price_amount = price
+                price_currency = "usd"  # Replace with the actual currency
+                stripe_price = stripe.Price.create(
+                    product=stripe_product.id,
+                    unit_amount=price_amount,
+                    currency=price_currency,
+                )
 
             # Retrieve the Stripe product ID and associate it with the order
-            order.stripe_product_id = stripe_product.id
-            order.stripe_price_id = stripe_price.id
-            db.session.commit()
+                order.stripe_product_id = stripe_product.id
+                order.stripe_price_id = stripe_price.id
+                db.session.commit()
 
-            flash('Your order has been sent!', 'success')
-            return jsonify(message='Order processed successfully')
+                flash('Your order has been sent!', 'success')
+                return jsonify(message='Order processed successfully')
 
         except stripe.error.StripeError as e:
             return jsonify(error=str(e)), 500

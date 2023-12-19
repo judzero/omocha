@@ -1,199 +1,219 @@
-
-{% extends "layout.html" %}
-{% block content %}
-{% include 'navbar.html' %}
+{% extends "layout.html" %} {% block content %} {% include 'navbar.html' %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Material Shopping Cart</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
     <!-- Add your custom styles or link to your stylesheet -->
     <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f6f6f6;
-        }
+      body {
+        font-family: "Roboto", sans-serif;
+        background-color: #f6f6f6;
+      }
 
-        .container {
-            margin-top: 10px;
-            margin-bottom: 20px;
-        }
+      .container {
+        margin-top: 10px;
+        margin-bottom: 20px;
+      }
 
-        .table th,
-        .table td {
-            text-align: center;
-            vertical-align: middle;
-        }
+      .table th,
+      .table td {
+        text-align: center;
+        vertical-align: middle;
+      }
 
-        .product-container {
-            display: flex;
-            align-items: center;
-            justify-content:stretch;
-        }
+      .product-container {
+        display: flex;
+        align-items: center;
+        justify-content: stretch;
+      }
 
-        .product-image {
-            max-width: 80px;
-            max-height: 70px;
-            margin: 5px 15px;
-        }
+      .product-image {
+        max-width: 80px;
+        max-height: 70px;
+        margin: 5px 15px;
+      }
 
-        .product-details {
-            display: flex;
-            flex-direction: column;
-        }
+      .product-details {
+        display: flex;
+        flex-direction: column;
+      }
 
-        .product-name {
-            font-size: 14px;
-        }
-        
-        #grandTotal {
-            display: none;
-            margin-top: 20px;
-            font-size: 1.2em;
-        }
+      .product-name {
+        font-size: 14px;
+      }
 
-        #checkboxContainer {
-            margin-bottom: 20px;
-        }
-        .item-checkbox {
-            width: 20px;
-            height: 20px;
-        }
-        .order-summary-item {
-            margin-bottom: 10px;
-        }
-        .order-summary-item span.text-muted,
-        .order-summary-item strong {
-            float: right;
-        }
+      #grandTotal {
+        display: none;
+        margin-top: 20px;
+        font-size: 1.2em;
+      }
 
-        .order-summary-item div {
-            text-align: left;
-        }
+      #checkboxContainer {
+        margin-bottom: 20px;
+      }
+      .item-checkbox {
+        width: 20px;
+        height: 20px;
+      }
+      .order-summary-item {
+        margin-bottom: 10px;
+      }
+      .order-summary-item span.text-muted,
+      .order-summary-item strong {
+        float: right;
+      }
 
-        .order-summary-container {
-            background-color: #dcdcdc;
-            padding: 35px;
-            border-radius: 4px;
-            height: 300px;
-        }
+      .order-summary-item div {
+        text-align: left;
+      }
+
+      .order-summary-container {
+        background-color: #dcdcdc;
+        padding: 35px;
+        border-radius: 4px;
+        height: 300px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="row">
-            <div class="col-md-8 order-md-1">    
-                <table class="table table-sm table-bordered">
-                    <thead>
-                    <tr>
-                        <th scope="col"></th>
-                        <th scope="col">Items</th>
-                        <th scope="col">Price</th>
-                        <th scope="col">Discount</th>
-                        <th scope="col">Quantity</th>
-                        <th scope="col">Subtotal</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for key, product in session['ShoppingCart'].items() %}
-                    <tr data-price="{{ product.price }}" data-discount="{{ product.discount }}">
-                        <td>
-                            <input type="checkbox" class="item-checkbox" data-subtotal="{{ product.price }}" unchecked>
-                        </td>
-                        <td>
-                            <div class="product-container">
-                                <img src="{{ url_for('static', filename='images/' + product.image) }}"
-                                     alt="{{ product.name }}" class="product-image">
-                                <div class="product-details">
-                                    <span class="product-name">{{ product.name }}</span>
-                                </div>
-                            </div>
-                        </td>
-                        <td>₱{{ product.price }}</td>
-                        {% if product.discount > 0 %}
-                            <td>{{ product.discount }}%</td>
-                        {% else %}
-                            <td>n/a</td>
-                        {% endif %}
-                        <td>
-                            {{product.quantity}}
-                        </td>
-                        {% set discounted_price = "%0.2f" | format((product.discount / 100) * product.price | float) %}
-                        <td>
-                            {% set subtotal = product.price | float %}
-                            {% set subtotal_formatted = '{:.2f}'.format(subtotal) %}
-                            {% if discounted_price | float > 0 %}
-                                {{ subtotal_formatted }} <br> -₱{{ discounted_price }}
-                            {% else %}
-                                {{ subtotal_formatted }}
-                            {% endif %}
-                        </td>
-                        <td>
-                            <a class="btn btn-outline-danger" href="{{url_for('deleteitem', id=key)}}">Delete</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-    
-            <div class="col-md-4 order-md-2 mb-4 order-summary">
-                <a href="{{url_for('clearcart')}}" class="btn btn-warning mb-3">Clear Cart</a>
-                <div class="order-summary-container">
-                    <h4 class="d-flex justify-content-between align-items-center mb-3">
-                        <span>Order Summary</span>
-                        <span class="badge badge-primary badge-pill" id="checkboxCount"></span>
-                    </h4>
-                    <div class="order-summary-item">
-                        <div>
-                            <strong id="subTotalValue"></strong>
-                            <h6 class="my-0 mt-4">Subtotal</h6>
-                            <div class="mt-2 mb-3">
-                                <small class="text-muted mb-3">Shipping Fee</small>
-                                <span class="text-muted" id="shippingValue"></span>
-                                <br>
-                                <br>
-                                <br>
-                                <br>
-                                <br>
-                            </div>
-                            <span class="mt-4">Subtotal</span>
-                            <strong id="grandTotalValue"></strong>
-                            
-                        </div>
-                    </div>                                   
-                </div>
-                <a href="{{url_for('get_order')}}" class="btn btn-outline-dark mt-3" style="width: 420px;">Proceed to Checkout</a>
-            </div>
+      <div class="row">
+        <div class="col-md-8 order-md-1">
+          <table class="table table-sm table-bordered">
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">Items</th>
+                <th scope="col">Price</th>
+                <th scope="col">Discount</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Subtotal</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for key, product in session['ShoppingCart'].items() %}
+              <tr
+                data-price="{{ product.price }}"
+                data-discount="{{ product.discount }}"
+              >
+                <td>
+                  <input
+                    type="checkbox"
+                    class="item-checkbox"
+                    data-subtotal="{{ product.price }}"
+                    unchecked
+                  />
+                </td>
+                <td>
+                  <div class="product-container">
+                    <img
+                      src="{{ url_for('static', filename='images/' + product.image) }}"
+                      alt="{{ product.name }}"
+                      class="product-image"
+                    />
+                    <div class="product-details">
+                      <span class="product-name">{{ product.name }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>₱{{ product.price }}</td>
+                {% if product.discount > 0 %}
+                <td>{{ product.discount }}%</td>
+                {% else %}
+                <td>n/a</td>
+                {% endif %}
+                <td class="quantity">{{product.quantity}}</td>
+                {% set discounted_price = "%0.2f" | format((product.discount /
+                100) * product.price | float) %}
+                <td>
+                  {% set subtotal = product.price | float %} {% set
+                  subtotal_formatted = '{:.2f}'.format(subtotal) %} {% if
+                  discounted_price | float > 0 %} {{ subtotal_formatted }}
+                  <br />
+                  -₱{{ discounted_price }} {% else %} {{ subtotal_formatted }}
+                  {% endif %}
+                </td>
+                <td>
+                  <a
+                    class="btn btn-outline-danger"
+                    href="{{url_for('deleteitem', id=key)}}"
+                    >Delete</a
+                  >
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
+
+        <div class="col-md-4 order-md-2 mb-4 order-summary">
+          <a href="{{url_for('clearcart')}}" class="btn btn-warning mb-3"
+            >Clear Cart</a
+          >
+          <div class="order-summary-container">
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+              <span>Order Summary</span>
+              <span
+                class="badge badge-primary badge-pill"
+                id="checkboxCount"
+              ></span>
+            </h4>
+            <div class="order-summary-item">
+              <div>
+                <strong id="subTotalValue"></strong>
+                <h6 class="my-0 mt-4">Subtotal</h6>
+                <div class="mt-2 mb-3">
+                  <small class="text-muted mb-3">Shipping Fee</small>
+                  <span class="text-muted" id="shippingValue"></span>
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                </div>
+                <span class="mt-4">Subtotal</span>
+                <strong id="grandTotalValue"></strong>
+              </div>
+            </div>
+          </div>
+          <button
+            id="proceedToCheckoutBtn"
+            href="{{url_for('get_order')}}"
+            class="btn btn-outline-dark mt-3"
+            style="width: 420px"
+          >
+            Proceed to Checkout
+          </button>
+        </div>
+      </div>
     </div>
-    
 
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Add additional scripts as needed -->
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="js/scripts.js"></script>
-<script src="static/js/grandtotal.js"></script>
-<script src="static/js/checkBox.js"></script>
-<script>
-    var productQuantity = product.quantity;
-    
-    // Now you can use productQuantity in your JavaScript code
-    console.log('Product Quantity:', productQuantity);
-    
-    // Example: Multiply the quantity by 2 and log the result
-    var multipliedQuantity = productQuantity * 2;
-    console.log('Multiplied Quantity:', multipliedQuantity);
-</script>
-
-</body>
-
-{% endblock content %}
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Add additional scripts as needed -->
+    <script src="static/js/jquery-3.7.1.js"></script>
+    <script src="static/js/grandtotal.js"></script>
+    <script src="static/js/checkBox.js"></script>
+  </body>
+  {% endblock content %}
+</html>
