@@ -1,6 +1,7 @@
 from shop import db, app, login_manager
 from datetime import datetime, timedelta
 from flask_login import UserMixin
+from sqlalchemy.ext.mutable import MutableDict
 import json , jwt
 
 @login_manager.user_loader
@@ -83,7 +84,8 @@ class CustomerOrder(db.Model):
     status = db.Column(db.String(20), default='Pending', nullable=False)
     customer_id = db.Column(db.Integer, unique=False, nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    orders = db.Column(JsonEcodedDict)
+    stripe_product_id = db.Column(db.String(50))
+    orders = db.Column(MutableDict.as_mutable(db.JSON))
 
     def __repr__(self):
         return'<CustomerOrder %r>' % self.invoice

@@ -3,3 +3,5 @@
 __init__.cpython-311.pyc
 *.pyc
 *.pyc
+*.py
+*.pyc
