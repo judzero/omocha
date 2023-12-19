@@ -104,7 +104,31 @@ def get_order():
     else:
         return redirect(url_for('customerLogin'))
         
-        
+
+@app.route('/stripe_pay', methods=["POST"])
+def stripe_pay():
+    if current_user.is_authenticated:
+        customer_id = current_user.id
+        invoice = secrets.token_hex(5)
+        data = request.get_json(force=True)
+        quantity = data.get('quantity', 0)
+        order = CustomerOrder(invoice=invoice, customer_id=customer_id)
+
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price': order.stripe_price_id,
+                'quantity': quantity,
+            }],
+            mode='payment',
+            success_url=url_for('home', _external=True) + f'?session_id={session["customer_id"]}',
+            cancel_url=url_for('index', _external=True),
+        )
+        return {
+            'checkout_session_id': session['customer_id'], 
+            'checkout_public_key': app.config['STRIPE_PUBLIC_KEY']
+        }
+
 def send_reset_email(user):
     token = user.get_reset_token()
     msg = Message('Password Reset Request', 

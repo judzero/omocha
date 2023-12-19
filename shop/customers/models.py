@@ -85,6 +85,7 @@ class CustomerOrder(db.Model):
     customer_id = db.Column(db.Integer, unique=False, nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     stripe_product_id = db.Column(db.String(50))
+    stripe_price_id = db.Column(db.String(50))
     orders = db.Column(MutableDict.as_mutable(db.JSON))
 
     def __repr__(self):
