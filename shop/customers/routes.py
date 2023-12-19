@@ -12,8 +12,8 @@ import traceback
 import stripe
 
 app.config['STRIPE_PUBLIC_KEY'] = 'pk_test_51OOkWEK4Yt7azovvDWXIAPJOzZOwq533hXqqZUQGwzQdHZioL4jQrQXTzI8cdeUNyaG1YVVRQuyZ52QFmEhLJksu00EN8c75Kq'
-stripe.api_key='sk_test_51OOkWEK4Yt7azovvCahoEAIVsyZ8o2eSoBzPc3mWgyy2TRpbV36lHzGFue42JxY9yOXzEoKXFD2pae9eES1N1VMt00S4myQB3y'
-
+app.config['STRIPE_PUBLIC_KEY'] = 'sk_test_51OOkWEK4Yt7azovvCahoEAIVsyZ8o2eSoBzPc3mWgyy2TRpbV36lHzGFue42JxY9yOXzEoKXFD2pae9eES1N1VMt00S4myQB3y'
+stripe.api_key= app.config['STRIPE_PUBLIC_KEY']
 @app.route('/customer/register', methods=['GET','POST'])
 def customer_register():
     form = CustomerRegisterForm()
@@ -105,29 +105,22 @@ def get_order():
         return redirect(url_for('customerLogin'))
         
 
-@app.route('/stripe_pay', methods=["POST"])
-def stripe_pay():
-    if current_user.is_authenticated:
-        customer_id = current_user.id
-        invoice = secrets.token_hex(5)
-        data = request.get_json(force=True)
-        quantity = data.get('quantity', 0)
-        order = CustomerOrder(invoice=invoice, customer_id=customer_id)
-
-        session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[{
-                'price': order.stripe_price_id,
-                'quantity': quantity,
-            }],
-            mode='payment',
-            success_url=url_for('home', _external=True) + f'?session_id={session["customer_id"]}',
-            cancel_url=url_for('index', _external=True),
-        )
-        return {
-            'checkout_session_id': session['customer_id'], 
-            'checkout_public_key': app.config['STRIPE_PUBLIC_KEY']
-        }
+@app.route('/create-checkout-session', methods=["POST"])
+def create_checkout_session():
+    session = stripe.checkout.Session.create(
+        line_items=[{
+            'price': 'price_1OP67lK4Yt7azovvDMWlEyIF',
+            'quantity': 1
+        }],
+        mode='payment',
+        success_url=url_for('home', _external=True) + '?session_id={CHECKOUT_SESSION_ID}',
+        cancel_url=url_for('getCart', _external=True),
+    )
+    return {
+        'checkout_session_id': session['id'], 
+       'checkout_public_key': app.config['STRIPE_PUBLIC_KEY']
+    }
+    
 
 def send_reset_email(user):
     token = user.get_reset_token()
