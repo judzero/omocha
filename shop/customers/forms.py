@@ -48,3 +48,4 @@ class ResetPasswordForm(FlaskForm):
     confirm = PasswordField('Confirm Password',
                                      validators=[validators.DataRequired(),validators.EqualTo('password')])
     submit = SubmitField('Reset Password')
+    # JALIFOGO TEST

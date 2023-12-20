@@ -1,3 +1,5 @@
+from sqlalchemy import desc
+from sqlalchemy.ext.mutable import MutableDict
 from flask import render_template, session, request, redirect,url_for,flash,current_app,jsonify
 from shop import app,db,photos,bcrypt,login_manager, mail
 from flask_login import login_required, current_user, login_user, logout_user
@@ -8,7 +10,7 @@ import os
 from flask_mail import Message
 import traceback
 
-
+import json
 import stripe
 
 app.config['STRIPE_PUBLIC_KEY'] = 'pk_test_51OOkWEK4Yt7azovvDWXIAPJOzZOwq533hXqqZUQGwzQdHZioL4jQrQXTzI8cdeUNyaG1YVVRQuyZ52QFmEhLJksu00EN8c75Kq'
@@ -49,31 +51,15 @@ def get_order():
     if current_user.is_authenticated:
         customer_id = current_user.id
         invoice = secrets.token_hex(5)
-
+        order = CustomerOrder(invoice=invoice, customer_id=customer_id, orders=session['ShoppingCart'])
+    
         try:
-            data = request.get_json(force=True)
-            print("Received Data:", data)
-            product_name = data.get('productName', 'Default Product Name')
-            price = data.get('price', 0)
-            quantity = data.get('quantity', 0)
-            
-            print(product_name)
-            print(price)
-            print(quantity)
-            for product_name in data.items():
-                product_name = data.get('productName', 'Default Product Name')
-                price = data.get('price', 0)
-                quantity = data.get('quantity', 0)
+            order_data = request.json.get('products')
 
-
-            # Assuming session['ShoppingCart'] contains the details of the order
-                order = CustomerOrder(invoice=invoice, customer_id=customer_id, orders=session['ShoppingCart'])
-                db.session.add(order)
-                db.session.commit()
-
-                print("Product Name:", product_name)
-                print("p:", price)
-                print("q:", quantity)
+            for product in order_data:
+                product_name = product.get('productName', 'N/A')
+                price = product.get('ProdInfo', {}).get('price', 0)
+                quantity = product.get('ProdInfo', {}).get('quantity', 0)
 
                 # Create a product in Stripe
                 product_type = "good"  # Replace with your actual product type ('service' or 'good')
@@ -88,13 +74,22 @@ def get_order():
                     currency=price_currency,
                 )
 
-            # Retrieve the Stripe product ID and associate it with the order
-                order.stripe_product_id = stripe_product.id
-                order.stripe_price_id = stripe_price.id
-                db.session.commit()
+                # Update stripe_price_id dictionary
+                if order.stripe_price_id is None:
+                    order.stripe_price_id = {}
+                
+                order.stripe_price_id[stripe_product.id] = {
+                    'price_id': stripe_price.id,
+                    'quantity': quantity
+                }
 
-                flash('Your order has been sent!', 'success')
-                return jsonify(message='Order processed successfully')
+            print(order.stripe_price_id)
+            db.session.add(order)
+            db.session.commit()
+
+
+            flash('Your order has been sent!', 'success')
+            return jsonify(message='Order processed successfully')
 
         except stripe.error.StripeError as e:
             return jsonify(error=str(e)), 500
@@ -107,20 +102,40 @@ def get_order():
 
 @app.route('/create-checkout-session', methods=["POST"])
 def create_checkout_session():
-    session = stripe.checkout.Session.create(
-        line_items=[{
-            'price': 'price_1OP67lK4Yt7azovvDMWlEyIF',
-            'quantity': 1
-        }],
-        mode='payment',
-        success_url=url_for('home', _external=True) + '?session_id={CHECKOUT_SESSION_ID}',
-        cancel_url=url_for('getCart', _external=True),
-    )
+    if current_user.is_authenticated:
+        stripe_price_ids = CustomerOrder.query \
+    .with_entities(CustomerOrder.stripe_price_id) \
+    .filter(CustomerOrder.stripe_price_id.isnot(None)) \
+    .order_by(desc(CustomerOrder.id)) \
+    .limit(1) \
+    .all()
+        if stripe_price_ids:
+                stripe_price_values = stripe_price_ids[0][0]
+                print("you were e")
+                line_items = []
+                for outer_key, inner_dict in stripe_price_values.items():
+         
+                        quantity = inner_dict.get('quantity', 0)
+                        price_id = inner_dict.get('price_id','N/A')
+
+                        line_item = {'price': price_id,
+                                      'quantity': quantity }
+
+                        line_items.append(line_item)
+                        print(line_items)
+                        session = stripe.checkout.Session.create(
+                                line_items=line_items,
+                                mode='payment',
+                                success_url=url_for('home', _external=True) + '?session_id={CHECKOUT_SESSION_ID}',
+                                cancel_url=url_for('getCart', _external=True),
+                                )
     print(f"Checkout Session ID: {session['id']}")
     print(f"Public Key: {app.config['STRIPE_PUBLIC_KEY']}")
 
     return {'checkout_session_id': session['id'], 
         'checkout_public_key': app.config['STRIPE_PUBLIC_KEY']}
+
+
 
     
 

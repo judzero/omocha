@@ -2,33 +2,6 @@ stripeKey =
   "pk_test_51OOkWEK4Yt7azovvDWXIAPJOzZOwq533hXqqZUQGwzQdHZioL4jQrQXTzI8cdeUNyaG1YVVRQuyZ52QFmEhLJksu00EN8c75Kq";
 var stripe = Stripe(stripeKey);
 
-// Fetch the Checkout Session ID from the server
-const fetchCheckoutSession = async () => {
-  try {
-    const response = await fetch("/create-checkout-session", {
-      method: "POST",
-    });
-
-    console.log("Raw Response:", response);
-
-    if (!response.ok) {
-      throw new Error("Failed to create checkout session");
-    }
-    const jsonResponse = await response.json();
-    console.log("JSON Response:", jsonResponse);
-
-    const { checkout_session_id, checkout_public_key } = jsonResponse;
-    console.log("Checkout Session ID:", checkout_session_id);
-    console.log("Public Key:", checkout_public_key);
-
-    return { checkout_session_id, checkout_public_key };
-  } catch (error) {
-    console.error("Error fetching checkout session:", error.message);
-    throw error; // Propagate the error to the caller if needed
-  }
-};
-
-// Handle the click event on the button
 const handleCheckoutClick = async () => {
   try {
     const data = await fetchCheckoutSession();
@@ -53,6 +26,36 @@ const handleCheckoutClick = async () => {
   }
 };
 
-// Attach the click event to the button with ID #proceedToCheckoutBtn
+// Fetch the Checkout Session ID from the server
+const fetchCheckoutSession = async () => {
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+
+    const response = await fetch("/create-checkout-session", {
+      method: "POST",
+    });
+
+    console.log("Raw Response:", response);
+
+    if (!response.ok) {
+      throw new Error("Failed to create checkout session");
+    }
+    const jsonResponse = await response.json();
+    console.log("JSON Response:", jsonResponse);
+
+    const { checkout_session_id, checkout_public_key } = jsonResponse;
+    console.log("Checkout Session ID:", checkout_session_id);
+    console.log("Public Key:", checkout_public_key);
+
+    return { checkout_session_id, checkout_public_key };
+  } catch (error) {
+    console.error("Error fetching checkout session:", error.message);
+    throw error; // Propagate the error to the caller if needed
+  }
+};
+
+// Handle the click event on the button
+
+// JALIFOGO TEST
 const proceedToCheckoutButton = document.querySelector("#proceedToCheckoutBtn");
 proceedToCheckoutButton.addEventListener("click", handleCheckoutClick);
