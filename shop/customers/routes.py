@@ -176,7 +176,7 @@ def reset_token(token):
         return redirect(url_for('customerLogin'))
     return render_template('customer/reset_token.html',title='Reset Password', form=form)
 
-        
+        // JALIFOGO TEST
 @app.route('/orders/<invoice>')
 @login_required
 def orders(invoice):
