@@ -12,8 +12,8 @@ import traceback
 import stripe
 
 app.config['STRIPE_PUBLIC_KEY'] = 'pk_test_51OOkWEK4Yt7azovvDWXIAPJOzZOwq533hXqqZUQGwzQdHZioL4jQrQXTzI8cdeUNyaG1YVVRQuyZ52QFmEhLJksu00EN8c75Kq'
-app.config['STRIPE_PUBLIC_KEY'] = 'sk_test_51OOkWEK4Yt7azovvCahoEAIVsyZ8o2eSoBzPc3mWgyy2TRpbV36lHzGFue42JxY9yOXzEoKXFD2pae9eES1N1VMt00S4myQB3y'
-stripe.api_key= app.config['STRIPE_PUBLIC_KEY']
+app.config['STRIPE_SECRET_KEY'] = 'sk_test_51OOkWEK4Yt7azovvCahoEAIVsyZ8o2eSoBzPc3mWgyy2TRpbV36lHzGFue42JxY9yOXzEoKXFD2pae9eES1N1VMt00S4myQB3y'
+stripe.api_key= app.config['STRIPE_SECRET_KEY']
 @app.route('/customer/register', methods=['GET','POST'])
 def customer_register():
     form = CustomerRegisterForm()
@@ -116,10 +116,12 @@ def create_checkout_session():
         success_url=url_for('home', _external=True) + '?session_id={CHECKOUT_SESSION_ID}',
         cancel_url=url_for('getCart', _external=True),
     )
-    return {
-        'checkout_session_id': session['id'], 
-       'checkout_public_key': app.config['STRIPE_PUBLIC_KEY']
-    }
+    print(f"Checkout Session ID: {session['id']}")
+    print(f"Public Key: {app.config['STRIPE_PUBLIC_KEY']}")
+
+    return {'checkout_session_id': session['id'], 
+        'checkout_public_key': app.config['STRIPE_PUBLIC_KEY']}
+
     
 
 def send_reset_email(user):

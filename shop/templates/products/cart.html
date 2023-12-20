@@ -199,7 +199,7 @@
           <form action="/create-checkout-session" method="POST">
           <button
             id="proceedToCheckoutBtn"
-            href="https://buy.stripe.com/test_3cscQF88W9dGgaA3cc"
+            href="{{url_for('get_order')}}"
             class="btn btn-outline-dark mt-3"
             style="width: 420px"
           >
@@ -216,12 +216,12 @@
     <!-- Add additional scripts as needed -->
 
     <script>
-    const checkout_public_key = '{{pk_test_51OOkWEK4Yt7azovvDWXIAPJOzZOwq533hXqqZUQGwzQdHZioL4jQrQXTzI8cdeUNyaG1YVVRQuyZ52QFmEhLJksu00EN8c75Kq}}';
     const checkout_session_id = '{{checkout_session_id}}'
+    const checkout_public_key = '{{pk_test_51OOkWEK4Yt7azovvDWXIAPJOzZOwq533hXqqZUQGwzQdHZioL4jQrQXTzI8cdeUNyaG1YVVRQuyZ52QFmEhLJksu00EN8c75Kq}}';
     </script>
     <script src="static/js/jquery-3.7.1.js"></script>
     <script src="static/js/grandtotal.js"></script>
-    <script src="static/js/script-no-ajax.js"></script>
+    <script src="static/js/script-ajax.js"></script>
     <script src="static/js/checkBox.js"></script>
   </body>
   {% endblock content %}
