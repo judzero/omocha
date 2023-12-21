@@ -152,7 +152,7 @@ document
           if (xhr.responseJSON && xhr.responseJSON.error) {
             alert("Error: " + xhr.responseJSON.error);
           } else {
-            alert("Unexpected error occurred.");
+            alert("Please Log in first.");
           }
         },
       });

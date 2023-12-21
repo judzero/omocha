@@ -1,6 +1,6 @@
 from sqlalchemy import desc
 from sqlalchemy.ext.mutable import MutableDict
-from flask import render_template, session, request, redirect,url_for,flash,current_app,jsonify
+from flask import render_template, session, request, redirect,url_for,flash,current_app,jsonify, abort
 from shop import app,db,photos,bcrypt,login_manager, mail
 from flask_login import login_required, current_user, login_user, logout_user
 from .forms import CustomerRegisterForm , CustomerLoginForm, RequestResetForm, ResetPasswordForm
@@ -9,6 +9,8 @@ import secrets
 import os
 from flask_mail import Message
 import traceback
+import time
+import uuid
 
 import json
 import stripe
@@ -126,7 +128,7 @@ def create_checkout_session():
                         session = stripe.checkout.Session.create(
                                 line_items=line_items,
                                 mode='payment',
-                                success_url=url_for('home', _external=True) + '?session_id={CHECKOUT_SESSION_ID}',
+                                success_url=url_for('thanks', _external=True) + '?session_id={CHECKOUT_SESSION_ID}',
                                 cancel_url=url_for('getCart', _external=True),
                                 )
     print(f"Checkout Session ID: {session['id']}")
@@ -230,3 +232,7 @@ def payment():
     orders.status = 'Paid'
     db.session.commit()
     return redirect(url_for('thank_you'))
+
+@app.route('/thank_you')
+def thanks():
+    return render_template('customer/thanks.html')

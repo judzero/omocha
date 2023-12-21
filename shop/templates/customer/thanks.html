@@ -1,0 +1,55 @@
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="{{url_for('static', filename='css/style.css')}}" rel="stylesheet">
+    <link href="{{url_for('static', filename='css/globals.css')}}" rel="stylesheet">
+</head>
+<body>
+    <div class="omocha-ty">
+      <div class="overlap-wrapper">
+        <div class="overlap">
+            <div class="image"><img class="conf" src="{{url_for('static', filename='bgvid/conf.png')}}" /></div>
+          <div class="group">
+            <div>
+            <a class="btn btn-success text-wrapper" href="{{url_for('home')}}">Continue shopping...</a>
+          </div>
+          <div id="countdown">Redirecting in <span id="counter">5</span> seconds...</div>
+          </div>
+          <p class="div">Purchase successful!</p>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    // Set the countdown time in seconds
+    var countdownTime = 5;
+
+    // Function to update the countdown element
+    function updateCounter() {
+        document.getElementById('counter').innerText = countdownTime;
+    }
+
+    // Function to handle the countdown and redirect
+    function countdown() {
+        updateCounter();
+
+        if (countdownTime > 0) {
+            countdownTime--;
+            setTimeout(countdown, 1000);
+        } else {
+            // Redirect to a different URL after the countdown
+            window.location.href = "/";
+        }
+    }
+
+    // Start the countdown when the page loads
+    window.onload = function () {
+        countdown();
+    };
+</script>
+</html>
+{% endblock %}

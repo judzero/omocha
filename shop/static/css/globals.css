@@ -1,0 +1,70 @@
+.omocha-ty {
+    background-color: #e0e0e0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .omocha-ty .overlap-wrapper {
+    background-color: #e0e0e0;
+    width: 1920px;
+    height: 1080px;
+  }
+  
+  .omocha-ty .overlap {
+    position: relative;
+    height: 1080px;
+    background-image: url('./static/bgvid/conf.png');
+    background-size: cover;
+    background-position: 50% 50%;
+  }
+  
+  .omocha-ty .group {
+    position: absolute;
+    width: 657px;
+    height: 100px;
+    top: 490px;
+    left: 631px;
+  }
+  
+  .omocha-ty .text-wrapper {
+    position: absolute;
+    top: 50px;
+    left: 65px;
+    font-family: "Roboto Slab-Bold", Helvetica;
+    font-weight: 700;
+    color: #000000;
+    font-size: 48px;
+    text-align: center;
+    border-radius: 36px;
+  }
+  
+  .omocha-ty .div {
+    position: absolute;
+    top: 306px;
+    left: 417px;
+    -webkit-text-stroke: 2px green;
+    font-family: "Georgia-Regular", Helvetica;
+    font-weight: 800;
+    color: #98FB98;
+    font-size: 96px;
+    text-align: center;
+    letter-spacing: 2px;
+    line-height: 0.1px;
+  }
+
+  .image {
+    width: 2200px;
+    height: 2000px;
+  }
+  
+  .image .conf {
+    position: fixed;
+    width: 2000px;
+    height: 1000px;
+    top: 2;
+    left: 20;
+    object-fit: cover;
+  }
