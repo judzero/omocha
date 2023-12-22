@@ -1,58 +1,110 @@
 {% extends 'layout.html' %}
 {% include '_messages.html' %}
 {% block content %}
-<div class="container">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="/seller">Seller Page</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-              <a class="nav-link" href="/seller">Home<span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/about">About</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/brands">Brands</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/category">Category</a>
-              </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{url_for('logout')}}" style="margin-left: 650px;">Logout</a>
-            </li>
+
+<!doctype html>
+<html lang="en">
+  <head>
+  	<title>Sidebar 02</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+		
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+		<link rel="stylesheet" href="{{url_for('static', filename='css/star.css')}}">
+  </head>
+  <body>
+		
+		<div class="wrapper d-flex align-items-stretch">
+			<nav id="sidebar">
+				<div class="custom-menu">
+					<button type="button" id="sidebarCollapse" class="btn btn-primary">
+	          <i class="fa fa-bars"></i>
+	          <span class="sr-only">Toggle Menu</span>
+	        </button>
         </div>
-      </nav>
-</div>
-<div class="container mt-5">
-    <table class="table table-sm table-bordered table-condensed table-hover">
-        <thead>
-            <th>#</th>
-            <th>Name</th>
-            <th>Edit</th>
-        </thead>
-        <tbody>
-            {% if brands %}
-            {% for brand in brands %}
-            <tr>
-                <td>{{loop.index}}</td>
-                <td>{{brand.name}}</td>
-                <td><a href="{{url_for('updatebrand', id=brand.id)}}" class="btn btn-sm btn-outline-info">Edit</a></td>
-            </tr>
-            {% endfor %}
-            {% else %}
-            {% for category in categories %}
-            <tr>
-                <td>{{loop.index}}</td>
-                <td>{{category.name}}</td>
-                <td><a href="{{url_for('updatecategory', id=category.id)}}" class="btn btn-sm btn-outline-info">Edit</a></td>
-            </tr>
-            {% endfor %}
-            {% endif %}
-        </tbody>
-    </table>
-</div>
+				<div class="p-4 pt-5">
+		  		<h1><a href="{{url_for('dashboard')}}" class="logo">Seller</a></h1>
+	        <ul class="list-unstyled components mb-5">
+	          <li class="active">
+	            <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Home</a>
+	            <ul class="collapse list-unstyled" id="homeSubmenu">
+                <li>
+                    <a href="/category">Categories</a>
+                </li>
+                <li>
+                    <a href="/brands">Brands</a>
+                </li>
+	            </ul>
+	          </li>
+	          <li>
+              <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Products</a>
+              <ul class="collapse list-unstyled" id="pageSubmenu">
+                <li>
+                    <a href="/addbrand">Add Brand</a>
+                </li>
+                <li>
+                    <a href="/addcategory">Add Category</a>
+                </li>
+                <li>
+                    <a href="/addproduct">Add Product</a>
+                </li>
+              </ul>
+	          </li>
+            <li>
+              <a href="#">About</a>
+            </li>
+
+	        <div class="footer mt-3">
+	        	<p>
+					Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with love</a>
+				</p>
+	        </div>
+
+	      </div>
+    	</nav>
+
+        <!-- Page Content  -->
+      <div id="content" class="p-2 p-md-5 pt-5 rating" data-rating="{{ current_rating }}">
+
+
+        <div class="container mt-5">
+          <table class="table table-sm table-bordered table-condensed table-hover">
+              <thead>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Edit</th>
+              </thead>
+              <tbody>
+                  {% if brands %}
+                  {% for brand in brands %}
+                  <tr>
+                      <td>{{loop.index}}</td>
+                      <td>{{brand.name}}</td>
+                      <td><a href="{{url_for('updatebrand', id=brand.id)}}" class="btn btn-sm btn-outline-info">Edit</a></td>
+                  </tr>
+                  {% endfor %}
+                  {% else %}
+                  {% for category in categories %}
+                  <tr>
+                      <td>{{loop.index}}</td>
+                      <td>{{category.name}}</td>
+                      <td><a href="{{url_for('updatecategory', id=category.id)}}" class="btn btn-sm btn-outline-info">Edit</a></td>
+                  </tr>
+                  {% endfor %}
+                  {% endif %}
+              </tbody>
+          </table>
+      </div>
+      </div>
+		</div>
+        <script src="/static/js/jquery.min.js"></script>
+        <script src="/static/js/popper.js"></script>
+        <script src="/static/js/bootstrap2.min.js"></script>
+        <script src="/static/js/main.js"></script>
+        <script src="/static/js/star.js"></script>
+  </body>
+</html>
 {% endblock content %}

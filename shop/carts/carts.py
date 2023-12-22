@@ -16,29 +16,36 @@ def AddCart():
     try:
         product_id = request.form.get('product_id')
         quantity = int(request.form.get('quantity'))
-        product = Addproduct.query.filter_by(id=product_id).first()
+
         if product_id and quantity and request.method == 'POST':
-            DictItems = {
-                product_id:{
-                    'name' : product.name,
-                    'price':product.price,
-                    'discount':product.discount,
-                    'quantity':quantity,
-                    'image':product.image_1}}
-            if 'ShoppingCart' in session:
-                print(session['ShoppingCart'])
-                if product_id in session['ShoppingCart']:
-                    for key, item in session['ShoppingCart'].items():
-                        if int(key) == int(product_id):
-                            session.modified = True
-                            item['quantity'] += 1
+            product = Addproduct.query.filter_by(id=product_id).first()
+
+            if product and product.stock >= quantity:
+                item = {
+                    'name': product.name,
+                    'price': product.price,
+                    'discount': product.discount,
+                    'quantity': quantity,
+                    'image': product.image_1
+                }
+
+                session.setdefault('ShoppingCart', {})
+                shopping_cart = session['ShoppingCart']
+
+                if product_id in shopping_cart:
+                    shopping_cart[product_id]['quantity'] += quantity
                 else:
-                    session['ShoppingCart'] = MagerDicts(session['ShoppingCart'], DictItems)    
-            else:
-                session['ShoppingCart'] = DictItems
-                return redirect(request.referrer)
+                    shopping_cart[product_id] = item
+
+                # Update the stock in the database
+                product.stock -= quantity
+                db.session.commit()
+
+                session.modified = True
+
     except Exception as e:
         print(e)
+
     finally:
         return redirect(request.referrer)
     
@@ -67,7 +74,25 @@ def deleteitem(id):
 @app.route('/clearcart')
 def clearcart():
     try:
+        shopping_cart = session.get('ShoppingCart', {})
+        
+        # Iterate through items in the shopping cart
+        for product_id, item in shopping_cart.items():
+            quantity_in_cart = item.get('quantity', 0)
+
+            # Retrieve the product from the database
+            product = Addproduct.query.filter_by(id=product_id).first()
+
+            if product:
+                # Return the stock to the database
+                product.stock += quantity_in_cart
+
+        # Clear the shopping cart in the session
         session.pop('ShoppingCart', None)
-        return redirect(url_for('home'))
+        
+        db.session.commit()  # Commit changes to the database
+
     except Exception as e:
-        print(e)
+        print(f"An error occurred: {e}")
+
+    return redirect(url_for('home'))
