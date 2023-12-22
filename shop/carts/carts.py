@@ -58,16 +58,32 @@ def getCart():
 
 @app.route('/deleteitem/<int:id>')
 def deleteitem(id):
-    if 'ShoppingCart' not in session and len(session['ShoppingCart']) <= 0:
+    if 'ShoppingCart' not in session or len(session['ShoppingCart']) <= 0:
         return redirect(url_for('home'))
+
     try:
         session.modified = True
+        item_to_delete = None
+
         for key, item in session['ShoppingCart'].items():
             if int(key) == id:
-                session['ShoppingCart'].pop(key,None)
-                return redirect(url_for('getCart'))
+                item_to_delete = item
+                session['ShoppingCart'].pop(key, None)
+                break
+
+        if item_to_delete:
+            # Retrieve the product from the database
+            product = Addproduct.query.filter_by(id=id).first()
+
+            if product:
+                # Return the stock to the database
+                product.stock += item_to_delete.get('quantity', 0)
+                db.session.commit()
+
+        return redirect(url_for('getCart'))
+
     except Exception as e:
-        print(e)
+        print(f"An error occurred: {e}")
         return redirect(url_for('getCart'))
     
 

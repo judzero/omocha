@@ -1,3 +1,6 @@
-{% for product in products %}
-{{product.name}}
-{% endfor %}
+<h2>Search Results</h2>
+<ul>
+    {% for product in products %}
+        <li>{{ product.name }} - {{ product.desc }}</li>
+    {% endfor %}
+</ul>

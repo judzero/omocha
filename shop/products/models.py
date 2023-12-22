@@ -1,7 +1,6 @@
 from shop import db,app
 from datetime import datetime
 
-
 class Addproduct(db.Model):
     __seachabale__ = ['name','desc']
     id = db.Column(db.Integer, primary_key=True)

@@ -17,12 +17,13 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///omochashop.db'
 app.config['SECRET_KEY'] = "omocha"
 app.config['UPLOADED_PHOTOS_DEST']= os.path.join(basedir, 'static/images')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['MSEARCH_BACKEND'] = 'whoosh'
+app.config['MSEARCH_INDEX_NAME'] = 'Addproduct'
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 search = Search()
 
 
-# search.init_app(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)

@@ -36,11 +36,21 @@ def logout():
     session.pop('email', None)
     return redirect(url_for('login'))
 
-@app.route('/result')
-def result():
-    searchword = request.form.get('q')
-    products = Addproduct.query.msearch(searchword, fields=['name']).all()
-    return render_template('products/result.html',products=products)
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    if request.method == 'POST':
+        query = request.form.get('query')
+        results = Addproduct.query.msearch(query).all()
+        return render_template('search_results.html', results=results)
+
+    return render_template('products/result.html')
+
+
+# @app.route('/result')
+# def result():
+#     searchword = request.form.get('q')
+#     result = Addproduct.query.msearch(searchword).all()
+#     return render_template('products/result.html',result=result)
 
 
 # @app.route('/search', methods=['GET', 'POST'])
