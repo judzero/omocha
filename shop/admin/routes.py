@@ -6,13 +6,6 @@ from .models import User
 from shop.products.models import Addproduct,Brand,Category
 import os
 
-@app.route('/seller')
-def seller():
-    if 'email' not in session:
-        flash(f'Please Log In before accessing this page', 'danger')
-        return redirect(url_for('login'))
-    products = Addproduct.query.all()
-    return render_template('admin/index.html', title="Seller Page", products=products)
 
 @app.route('/brands')
 def brands():
@@ -59,7 +52,11 @@ def login():
     return render_template('admin/login.html', form=form, title="Log In Page")
 
 
-@app.route('/dashboard')
+@app.route('/seller')
 def dashboard():
-    return render_template('admin/dashboard.html')
+    if 'email' not in session:
+        flash(f'Please Log In before accessing this page', 'danger')
+        return redirect(url_for('login'))
+    products = Addproduct.query.all()
+    return render_template('admin/dashboard.html', products=products)
 
