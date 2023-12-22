@@ -1,4 +1,6 @@
-from flask import render_template, session, request, redirect,url_for,flash,current_app,jsonify
+from sqlalchemy import desc
+from sqlalchemy.ext.mutable import MutableDict
+from flask import render_template, session, request, redirect,url_for,flash,current_app,jsonify, abort
 from shop import app,db,photos,bcrypt,login_manager, mail
 from flask_login import login_required, current_user, login_user, logout_user
 from .forms import CustomerRegisterForm , CustomerLoginForm, RequestResetForm, ResetPasswordForm
@@ -7,13 +9,15 @@ import secrets
 import os
 from flask_mail import Message
 import traceback
+import time
+import uuid
 
-
+import json
 import stripe
 
 app.config['STRIPE_PUBLIC_KEY'] = 'pk_test_51OOkWEK4Yt7azovvDWXIAPJOzZOwq533hXqqZUQGwzQdHZioL4jQrQXTzI8cdeUNyaG1YVVRQuyZ52QFmEhLJksu00EN8c75Kq'
-stripe.api_key='sk_test_51OOkWEK4Yt7azovvCahoEAIVsyZ8o2eSoBzPc3mWgyy2TRpbV36lHzGFue42JxY9yOXzEoKXFD2pae9eES1N1VMt00S4myQB3y'
-
+app.config['STRIPE_SECRET_KEY'] = 'sk_test_51OOkWEK4Yt7azovvCahoEAIVsyZ8o2eSoBzPc3mWgyy2TRpbV36lHzGFue42JxY9yOXzEoKXFD2pae9eES1N1VMt00S4myQB3y'
+stripe.api_key= app.config['STRIPE_SECRET_KEY']
 @app.route('/customer/register', methods=['GET','POST'])
 def customer_register():
     form = CustomerRegisterForm()
@@ -44,44 +48,47 @@ def customer_logout():
     logout_user()
     return redirect(url_for('customerLogin'))
 
-@app.route('/customer/order', methods=['GET'])
+@app.route('/customer/order', methods=['POST'])
 def get_order():
     if current_user.is_authenticated:
         customer_id = current_user.id
         invoice = secrets.token_hex(5)
-
+        order = CustomerOrder(invoice=invoice, customer_id=customer_id, orders=session['ShoppingCart'])
+    
         try:
-            
-            
-            # Assuming session['ShoppingCart'] contains the details of the order
-            order = CustomerOrder(invoice=invoice, customer_id=customer_id, orders=session['ShoppingCart'])
+            order_data = request.json.get('products')
+
+            for product in order_data:
+                product_name = product.get('productName', 'N/A')
+                price = product.get('ProdInfo', {}).get('price', 0)
+                quantity = product.get('ProdInfo', {}).get('quantity', 0)
+
+                # Create a product in Stripe
+                product_type = "good"  # Replace with your actual product type ('service' or 'good')
+                stripe_product = stripe.Product.create(name=product_name, type=product_type)
+
+                # Create a price for the product
+                price_amount = price
+                price_currency = "usd"  # Replace with the actual currency
+                stripe_price = stripe.Price.create(
+                    product=stripe_product.id,
+                    unit_amount=price_amount,
+                    currency=price_currency,
+                )
+
+                # Update stripe_price_id dictionary
+                if order.stripe_price_id is None:
+                    order.stripe_price_id = {}
+                
+                order.stripe_price_id[stripe_product.id] = {
+                    'price_id': stripe_price.id,
+                    'quantity': quantity
+                }
+
+            print(order.stripe_price_id)
             db.session.add(order)
             db.session.commit()
 
-            
-            product_name = request.args.get('productName')
-            price = request.args.get('price')
-            quantity = request.args.get('quantity')
-
-            print("Product Name:", product_name)
-
-            # Create a product in Stripe
-            product_type = "good"  # Replace with your actual product type ('service' or 'good')
-            stripe_product = stripe.Product.create(name=product_name, type=product_type)
-
-            # Create a price for the product
-            price_amount = price
-            price_currency = "usd"  # Replace with the actual currency
-            stripe_price = stripe.Price.create(
-                product=stripe_product.id,
-                unit_amount=price_amount,
-                currency=price_currency,
-            )
-
-            # Retrieve the Stripe product ID and associate it with the order
-            order.stripe_product_id = stripe_product.id
-            order.stripe_price_id = stripe_price.id
-            db.session.commit()
 
             flash('Your order has been sent!', 'success')
             return jsonify(message='Order processed successfully')
@@ -94,7 +101,46 @@ def get_order():
     else:
         return redirect(url_for('customerLogin'))
         
-        
+
+@app.route('/create-checkout-session', methods=["POST"])
+def create_checkout_session():
+    if current_user.is_authenticated:
+        stripe_price_ids = CustomerOrder.query \
+    .with_entities(CustomerOrder.stripe_price_id) \
+    .filter(CustomerOrder.stripe_price_id.isnot(None)) \
+    .order_by(desc(CustomerOrder.id)) \
+    .limit(1) \
+    .all()
+        if stripe_price_ids:
+                stripe_price_values = stripe_price_ids[0][0]
+                print("you were e")
+                line_items = []
+                for outer_key, inner_dict in stripe_price_values.items():
+         
+                        quantity = inner_dict.get('quantity', 0)
+                        price_id = inner_dict.get('price_id','N/A')
+
+                        line_item = {'price': price_id,
+                                      'quantity': quantity }
+
+                        line_items.append(line_item)
+                        print(line_items)
+                        session = stripe.checkout.Session.create(
+                                line_items=line_items,
+                                mode='payment',
+                                success_url=url_for('thanks', _external=True) + '?session_id={CHECKOUT_SESSION_ID}',
+                                cancel_url=url_for('getCart', _external=True),
+                                )
+    print(f"Checkout Session ID: {session['id']}")
+    print(f"Public Key: {app.config['STRIPE_PUBLIC_KEY']}")
+
+    return {'checkout_session_id': session['id'], 
+        'checkout_public_key': app.config['STRIPE_PUBLIC_KEY']}
+
+
+
+    
+
 def send_reset_email(user):
     token = user.get_reset_token()
     msg = Message('Password Reset Request', 
@@ -147,7 +193,7 @@ def reset_token(token):
         return redirect(url_for('customerLogin'))
     return render_template('customer/reset_token.html',title='Reset Password', form=form)
 
-        
+# JALIFOGO TEST      
 @app.route('/orders/<invoice>')
 @login_required
 def orders(invoice):
@@ -186,3 +232,7 @@ def payment():
     orders.status = 'Paid'
     db.session.commit()
     return redirect(url_for('thank_you'))
+
+@app.route('/thank_you')
+def thanks():
+    return render_template('customer/thanks.html')

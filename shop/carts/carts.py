@@ -42,7 +42,7 @@ def AddCart():
     finally:
         return redirect(request.referrer)
     
-    
+# JALIFOGO TEST
 @app.route('/cart')
 def getCart():
     if 'ShoppingCart' not in session:
