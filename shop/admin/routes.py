@@ -53,7 +53,7 @@ def login():
 
 
 @app.route('/seller')
-def dashboard():
+def seller():
     if 'email' not in session:
         flash(f'Please Log In before accessing this page', 'danger')
         return redirect(url_for('login'))

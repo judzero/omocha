@@ -12,7 +12,7 @@
             <form action="" method="POST">
                 <input type="text" name="brand" class="form-control">
                 <input type="submit" value="Add brand" class="btn btn-info mt-2">
-                <a href="{{url_for('dashboard')}}" class="btn btn-info" style="margin-top: 8px;">Cancel</a>
+                <a href="{{url_for('seller')}}" class="btn btn-info" style="margin-top: 8px;">Cancel</a>
             </form>
             {% else %}
             {% include '_messages.html '%}
@@ -20,7 +20,7 @@
             <form action="" method="POST">
                 <input type="text" name="category" class="form-control">
                 <input type="submit" value="Add category" class="btn btn-info mt-2">
-                <a href="{{url_for('dashboard')}}" class="btn btn-info" style="margin-top: 8px;">Cancel</a>
+                <a href="{{url_for('seller')}}" class="btn btn-info" style="margin-top: 8px;">Cancel</a>
             </form>
             {% endif %}
         </div>
