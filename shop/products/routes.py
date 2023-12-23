@@ -24,8 +24,9 @@ def home():
 def about():
     if 'email' not in session:
         flash(f'Please Log In before accessing this page', 'danger')
+        
         return redirect(url_for('login'))
-    return render_template('products/about.html')
+    return render_template('products/about.html', brands=brands(), categories=categories())
 
 @app.route('/new')
 def new():

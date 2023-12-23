@@ -1,31 +1,10 @@
-{% extends 'layout.html' %}
-{% block content %}
+{% extends "layout.html" %} {% block content %} {% include 'navbar.html' %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terms and Conditions</title>
-    <div class="container">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="/seller">Seller Page</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                  <a class="nav-link" href="/seller">Home<span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="/about">About</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{{url_for('logout')}}" style="margin-left: 780px;">Logout</a>
-                </li>
-            </div>
-          </nav>
-    </div>    
+    <title>Terms and Conditions</title>   
  <div class="container mt-5">
 </head>
 <body>
@@ -52,31 +31,80 @@
             padding: 3px 0;
         }
     </style>
+
     <h1 style="text-decoration: underline;">Terms and Conditions</h1>
     <br>
     <div class="content">
-        <h2>1. Acceptance of Terms</h2>
-        <p>By accessing and using this website, you agree to be bound by these terms and conditions.</p>
+      <p>Please be sure to read everything before agreeing to our Terms and Conditions and/or signing up to our Services.If you do not agree with our Terms and Conditions, do not sign-up or use our Services.</p> 
+    </div>
+    <div class="content">
+        <h2>1. Account and Registration</h2>
+        <h3>*Registration</h3>
+        <p> -By Registering to our Store you are agreeing to follow the Rules, Regulations and Policies that we impose to the Users in their activity and transaction in our site. This means that you will be liable to the actions we will detail here if ever that you fail to abide with these Rules, Regulations and Policies.
+          -Registration of Minors should be supervised and approved by their Parents or Legal Guardian.</p>
+        <h3> *Account</h3>
+        <p> -Registered Accounts Users are to abide with the Rules, Regulations and Policies of this Store. Any actions that deviates or violates these Rules, Regulations and Policies will be liable to answer under the Inactivity Policies/Account Deletion Terms.</p>
 
-        <h2>2. Use of the Website</h2>
-        <p>You agree to use this website in accordance with applicable laws and regulations and not for any unlawful purpose.</p>
+        <h2>2. Orders and Paymen</h2>
+        <h3>*Orders</h3>
+        <p>-Orders made in our Store would be delivered by us through our Courier Service
+          -Any Defects in the product that was delivered by us will be subject to our Return/Refund/Store Credits Policies Terms.</p>
+        <h3>*Payment</h3>
+        <p>-Payment should be made in Cash on Delivery model. Any deviation from this model is considered a violation of the Rules, Regulations and Policies of our Store.
+          -Failing to pay (for Buyers) or deliver the payment to the Seller (for Couriers) would be a violation of our Rules, Regulations and Policies which would make the involved individual be liable under our Inactivity Policy/Account Deletion Policy Terms.</p>
 
-        <h2>3. Privacy Policy</h2>
-        <p>Your use of this website is also governed by our Privacy Policy. Please review it for information about how we collect and use your data.</p>
+        <h2>3. Return/Refund/Store Credits</h2>
+        <h3>*Product Return</h3>
+        <p> -If a Product ordered and delivered by our Store is deemed defective by the customer and choose to return to it to the seller via our Courier Service, they are required to (i) provide a Video Evidence of the moment of them Unboxing the Product, (ii) Provide a detailed explanation of the defect of the Product via Video Evidence and lastly (iii) Provide the Receipt of the Transaction.
+          -Upon return of the Product, Buyers are to expect a delivery of the same Product in pristine condition, or if the Buyer choose; a refund.</p>
+        <h3>*Refund</h3>
+        <p> -If the conditions above were met and the Buyer wishes to Refund instead of getting a new product; our store would provide the Buyer Store Credits equivalent to the monetary value owed instead; this is done to prevent the possibility of losing the money in the process of delivering it back to the Buyer.</p>
+        <h3>*Store Credits</h3>
+        <p>-Store Credits can be used to buy Products in our Store, though they are only available for those who have Refunded the Products they have ordered.
+          -Store Credits are available for only a limited time, failing to consume them would lead to the Credit expiring.</p>
 
-        <h2>4. Intellectual Property</h2>
-        <p>All content on this website, including text, graphics, logos, and images, is the property of our company and is protected by copyright.</p>
+        <h2>4. Shopping and Delivery Policy</h2>
+        <h3>*Shopping</h3>
+        <p>-All of the Products that are listed in our Store are the only things that we offer to sell, anything that cannot be seen in our available Library (including the things that were available but have been removed) are Products that we do not currently offer.
+          -Products that a Customer deem subpar or does not present themselves truthfully can be reported after which we will investigate and take action.</p>
+        <h3>*Delivery Policies</h3>
+        <p>-Orders are to be delivered by registered and authorized Couriers. Any deliveries not made by these authorized Couriers are considered to be a violation of our Rules, Regulations and Policies. 
+          -Orders Delivered with Damage Packaging or Seals will be considered a defective and can be returned. Returning a Product with Damage Packaging or Seal requires the Customer to have (I) a Video Evidence of the Damage, (ii) Photograph Evidence. Returning a Product without these requirements would earn the Customer a Warning and may be liable to answer under the Inactivity Policy/Account Deletion Terms.</p>
 
-        <h2>5. Disclaimers</h2>
-        <p>This website is provided "as is" without any warranties. We are not responsible for any errors or omissions on the website.</p>
+        <h2>5. Inactivity Policy/Account Deletion Policy</h2>
+        <h3>*Inactivity Policy</h3>
+        <p> -After a period of time; based on the type of account, complete inactivity would lead to Account being Disabled or Deleted in order to preserve Data resources.
+          --Inactivity time window
+            *Seller - 6 months
+            *Courier - 6 months
+            *Buyer - 1 Year</p>
+        <h3>*Account Deletion Policy</h3>
+        <p> -Violation of the Terms of Service and Conditions of our site would earn the the violating account a Warning. Getting 3 Warning will get the violating account liable for Account Deletion.
+          -Any major violation with our Terms of Service and Conditions would be met with Account Deletion and also a Ban on creating and registering an account in the future regardless of the violating account’s positional standing in our Store (Buyer, Courier, Seller).</p>
 
-        <h2>6. Changes to Terms</h2>
-        <p>We may update these terms and conditions at any time. Please check this page periodically for changes.</p>
+        <h2>6. Termination Service</h2>
+        <p> -By failing to receive the Product a Buyer bought in our Store Website 3 times, the Product would be returned to the Seller and the Buyer would incur a Warning in their Account and make make them liable to our Inactivity Policy/Account Deletion Policy.</p>
 
-        <h2>7. Contact Information</h2>
-        <p>If you have any questions about these terms and conditions, please contact us at support@example.com.</p>
+        <h2>7. Duties and Responsibility (Seller/Courier/Buyer)</h2>
+        <h3>*Seller</h3>
+        <p>-Sellers are to make sure that their products are as accurate to how they advertise it to their customers as possible and are required to facilitate Return Request if ever the products that they delivered were defective. Failing to comply with these Terms will earn the Seller a Warnings.</p>
+        <h3>*Courier</h3>
+        <p>-Couriers are to deliver the products they were tasked to deliver at the set time it was stated to be delivered to the recipient (Buyer). They also need to hand over the complete amount of the money they have gained from the payment they were able to make in the course of 24 hours. Failing to do so would make them liable under our Inactivity Policy/Account Deletion Policy Terms.</p>
+        <h3>*Buyer</h3>
+        <p>-Buyers are to pay the full amount of the Product as it was listed on our Store Website, failing to do so would make them liable under our Inactivity Policy/Account Deletion Policy Terms.</p>
+
+        <h2>8. Data Privacy and Security</h2>
+        <h3>*Data Privacy</h3>
+        <p>-We protect the Data given to us in the process of signing up (Personal information, Address, etc.), taking care not to leak them to the Public.
+          -If ever Data were leaked when our efforts of protecting them fails, we will provide compensations equivalent to the monetary value of the damages.</p>
+        <h3>*Security</h3>
+        <p>-We will secure the informations we have been trusted with by using a combination of Password Protected Access, Account Verification and Admin Supervision.</p>
     </div>
 </body>
  </div>
+         <!-- Bootstrap core JS-->
+         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+         <!-- Core theme JS-->
+         <script src="static/js/jquery-3.7.1.js"></script>
 </html>
 {% endblock %}
