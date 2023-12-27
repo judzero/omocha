@@ -23,7 +23,7 @@ def customer_register():
     form = CustomerRegisterForm()
     if form.validate_on_submit():
         hash_password = bcrypt.generate_password_hash(form.password.data)
-        register = Register(name=form.name.data, username=form.username.data, email=form.email.data,password=hash_password,city=form.city.data,contact=form.contact.data, address=form.address.data, zipcode=form.zipcode.data, token_used = 0)
+        register = Register(name=form.name.data, username=form.username.data, email=form.email.data,password=hash_password,city=form.city.data,contact=form.contact.data, address=form.address.data, zipcode=form.zipcode.data, reset_token_used = 0)
         db.session.add(register)
         flash(f'Register Successful!', 'success')
         db.session.commit()
